@@ -44,24 +44,34 @@ if_valid:				#label to call valid_input and exit program
 
 	bne $t0, $t7, iterate_string	#if offset of $t0 is not equal to $t7, branch to iterate_string to continue looping
 sub_prog1:
-	add $t0, $a0, $0		# copy parameter from $a0 into $t0
-		
-	sub $s4, $t1, $s1		# subtract appropriate ASCII dec value to get dec value of hex input
+
+if_valid:				#label to call valid_input and exit program
+
+	sub $s4, $t1, $s1		#subtract appropriate ASCII dec value to get dec value of hex input
 	sllv $s4, $s4, $s3		# multiply $s3 by 4
 	addi $s3, $s3, -4
+	add $s2, $s4, $s2		# add and store the value of $s4 and $s2 to $s2
+	bne $t0, $t7, iterate_string	#if offset of $t0 is not equal to $t7, branch to iterate_string to continue looping
 
-	add $v0, $t1, $0		# put return values in $v0
-	jr $ra				# return
-convert_string:
-
-	$sp, $sp, -8
-	sw $t0, 0($sp) 
+less_than_ten:				#if the value at offset 0 < 8 branch to this label
+	addi $s0, $0, 10		#store 10 in $s0
+	addi $t0, $t0, -1		#subtract 1 from user_input
+	lb $t1, 0($t0)
+	blt $t1, 58, exit_loop		#if 0($t0) < 10, branch to exit_loop
+	divu $s2, $s0			# else divide by 10 and store in $s2
+	mflo $a0			# move lower bits to $a0 and print
+	li $v0, 1
+	syscall
+	mfhi $s2			#move higher bits to $s2
 	
-
+sub_prog2:
 	addi $t0, $t0, 1		#increment offset of $t0 by 1
 	sllv $s4, $s4, $s3		# multiply $s3 by 4
 	addi $s3, $s3, -4
-output_dec_int:
+
+
+
+sub_prog3:
 
 too_large:				#label to call invalid_input and exit program
 	li $v0, 4			#call code to prompt too_large message
@@ -69,7 +79,12 @@ too_large:				#label to call invalid_input and exit program
 	syscall
 	li $v0, 10			#call code to exit program
 	syscall
-
+exit_loop:
+	li $v0, 1			#callcode to print integer
+	addi $a0, $s2, 0
+	syscall
+	li $v0, 10			#call code to exit program
+	syscall
 # program flow:
 # read input in main
 # iterate through input until a comma is found
