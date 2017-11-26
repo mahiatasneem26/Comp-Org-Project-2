@@ -92,10 +92,31 @@ exit_loop:
 #subprog 2:
 	#loop through string 
 	# for spaces or tabs, increment offset
-	# valid charecter -  send to subprog#1 to convert to decimal
+	# valid charecter 
+		# send to subprog#1 to convert to decimal	
+		# addi $s3, $s3, 4 to keep track of how much to multiply with
+alternate:
+	# loop through string 
+	# for spaces or tabs, increment offset
+	# charecter 
+		# store charecter in stack1	
+		# addi $s3, $s3, 4 to keep track of how much to multiply with (?)
+	# comma
+		# send stack to subprog#1 to convert to decimal
+	# increment offset
+	
 subprog#1:
-	# convert to ascii decimal
+	# pop stack1 letter by letter
+	# valid:
+		# check_length
+		# convert letter to ascii decimal
+		# multiply by s3 and decrement s3
+		# store charecter in stack2
+	#invalid:
+		# return to subprog2
 	# return to subprog #2
 #subprog 3:
-	#output decimal/ Nan/ too large
+	# decimal
+		# do less than 10
+	# else:  Nan/ too large
 	# loop back to main to check for next set of strings
