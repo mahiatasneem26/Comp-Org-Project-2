@@ -138,5 +138,12 @@ subrogram_3:
 	beq $t0, $0, print_digits
 	addi $t1, $t1, 1
 
-  print_digits:				# CONTINUE HERE
+    print_digits:					
+	li $v0, 1
+	addi $a0, $t3, 0
+	syscall					# CONTINUE HERE
+
+
+
+
 
