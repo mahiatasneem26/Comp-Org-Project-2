@@ -8,22 +8,22 @@
 
 	.text				# mark beginning of text segment
 main: 
-					# read input
-	li $v0, 8			# call code to read string
-	la $a0, user_input		# load address of user_input in $t0 to argument register $a0
-	la $a1, 1001			# gets length of space in user_input to avoid exceeding memory limit
-	syscall				# syscall to read user_input and store the string in memory
+	# read input
+	li $v0, 8			
+	la $a0, user_input		
+	la $a1, 1001			
+	syscall				
 		
 	la $s0, user_input
-	li $a2, 0			# stores first index 
-	li $a3, 0			# stores second index 
+	li $a2, 0					# stores first index 
+	li $a3, 0					# stores second index 
 	
-					# loop through string
+							# loop through string
 	loop_string:
-		add $t0, $s0, $a3		# add charectar and index
-		lb $t1, 0($t0)			# load first byte(first charectar) of $t0 into $t1
+		add $t0, $s0, $a3			# add charectar and index
+		lb $t1, 0($t0)				# load first byte(first charectar) of $t0 into $t1
 		
-					# if t1 == ',' || null || newline, call subprogram2
+							# if t1 == ',' || null || newline, call subprogram2
 		beq $t1, 44, call_subProg2
 		beq $t1, 0,  call_subProg2
 		beq $t1, 10, call_subProg2
@@ -34,12 +34,12 @@ main:
 			jal subprogram_3
 			j set_start_index
 		
-		Print_Nan:			# prints "Nan" message
+		Print_Nan:				# prints "Nan" message
 			li $v0, 4
 			la $a0, Nan
 			syscall
 			j set_start_index
-		Print_too_large:
+		Print_too_large:			# prints "too large" message
 			li $v0, 4
 			la $a0, too_large
 			syscall
@@ -56,14 +56,14 @@ main:
 		
 		next:
 			addi $a3, $a3, 1		# increment offset of $s0 by 1	
-			j loop_string				# continue looping
+			j loop_string			# continue looping
 
    		exit:
 			li $v0, 10
 			syscall
 		
 subprogram_1:
-	addi $t1, $0, 87			# saves ASCII dec to be subtracted in t1
+	addi $t1, $0, 87				# saves ASCII dec to be subtracted in t1
 	bgt $a1, 'f', Print_Nan			
 	bge $a1, 'a', convert_num
 	addi $t1, $0, 55
@@ -73,31 +73,31 @@ subprogram_1:
 	bgt $a1, '9', Print_Nan
 	bge $a1, '0', convert_num
 
-	j Print_Nan				# if char < 0, print NaN
+	j Print_Nan					# if char < 0, print NaN
 
-						# convert numbers
+							# convert numbers
  	convert_num:
 		sub $v1, $a1, $t1
 
-	jr $ra 					# return value in $v1
+	jr $ra 						# return value in $v1
 	
 subprogram_2:
-	sw $ra, 0($sp) 				# store new return value from stackpointer
-						# copy a2 and a3 in temp registers
+	sw $ra, 0($sp) 					# store new return value from stackpointer
+							# copy a2 and a3 in temp registers
 	addi $t2, $a2, 0
 	addi $t3, $a3, 0
 	
-						# increment and decrement to get charactar string
-						# check for $t2 in a loop
+							# increment and decrement to get charactar string
+							# check for $t2 in a loop
 	check_t2:
 		add $t0, $s0, $t2
 		lb $t1, 0($t0)				# load first byte(first charectar) of $t0 into $t1
 	
-						# if comma, endline or newline, jump to Print_Nan
+							# if comma, endline or newline, jump to Print_Nan
 		beq $t2, $t3, Print_Nan
 	
 
-						# if space or tab increment $t2
+							# if space or tab increment $t2
 		beq $t1, 32, increment_t2
 		beq $t1, 9, increment_t2
 	
@@ -108,12 +108,12 @@ subprogram_2:
 			addi $t2, $t2, 1
 			j check_t2
 
-						# check for $t3 in a loop
+							# check for $t3 in a loop
 	check_t3:
 		add $t0, $s0, $t3
 		lb $t1, 0($t0)				# load first byte(first charectar) of $t0 into $t1	
 
-						# if space or tab decrement $t3
+							# if space or tab decrement $t3
 		beq $t1, 32, decrement_t3
 		beq $t1, 9, decrement_t3
 
@@ -124,7 +124,7 @@ subprogram_2:
 		decrement_t3:
 			addi $t3, $t3, -1
 			j check_t3
-	compute_value:				# converts hex string to dec 
+	compute_value:					# converts hex string to dec 
 		
 
 		add $t0, $t2, $s0
@@ -146,9 +146,9 @@ subprogram_2:
 
 
 subprogram_3:
-	addi $t2, $0, 10			# store 10 in a register
-	lw $t0, 0($sp)				# get return value from subprog2
-	addi $t1, $0, 0				# register to increment stackpointer offset
+	addi $t2, $0, 10				# store 10 in a register
+	lw $t0, 0($sp)					# get return value from subprog2
+	addi $t1, $0, 0					# register to increment stackpointer offset
 	
 	get_digits:
 		divu $t0, $t2				# divide value by 10
@@ -160,7 +160,7 @@ subprogram_3:
 		addi $t1, $t1, 1			# else increment stack pointer offset
 		j get_digits
 
-	print_digits:	
+	print_digits:					# prints digits from the stack
 		add $t4, $sp, $t1
 		lb $a0, 0($t4)
 				
